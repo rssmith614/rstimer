@@ -1,45 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 // import SegmentDisplay from "./segment-display.js"
 
 export default () => {
   const [time, setTime] = useState(0);
   const [timing, setTiming] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [spaceHeld, setSpaceHeld] = useState(false);
+  const [ready, setReady] = useState(false);
 
-  window.setInterval(window.display.setValue(msToStr(time)), 100);
+  const timeRef = useRef(0);
+  const timerRef = useRef();
 
   useEffect(() => {
-    let interval = null;
+    let timerInterval = null;
+    let displayInterval = null;
+
+    displayInterval = setInterval(() => {
+      window.display.setValue(msToStr(timeRef.current));
+    }, 10);
+
+    document.addEventListener("keydown", downHandler, false);
+    document.addEventListener("keyup", upHandler, false);
 
     if (timing) {
-      interval = setInterval(() => {
-        setTime((time) => time + 10)
+      timerInterval = setInterval(() => {
+        timeRef.current = Date.now() - startTime;
+        setTime(timeRef.current);
       }, 10);
     } else {
-      clearInterval(interval);
+      clearInterval(timerInterval);
+    }
+
+    if (ready && spaceHeld) {
+      window.display.colorOn = '#00ff00';
+    } else if (!ready && spaceHeld) {
+      window.display.colorOn = '#ff0000';
+    } else {
+      window.display.colorOn = '#ffffff';
     }
 
     return () => {
-      clearInterval(interval);
+      clearInterval(timerInterval);
+      clearInterval(displayInterval);
+      document.removeEventListener("keydown", downHandler, false);
+      document.removeEventListener("keyup", upHandler, false);
     }
-  }, [timing]);
-
-  // function handleChange(event) {
-  //   setTime(event.target.value);
-  // };
-  
-  // function animate() {
-  //   if (timing) {
-  //     delta = Date.now() - startTime;
-  //     let mSeconds = Math.floor((delta % 1000) );
-  //     let seconds = Math.floor((delta / 1000) % 60);
-  //     let minutes = Math.floor((delta / (1000 * 60)) % 60);
-  //     let str = ((minutes < 10) ? '0' : '') + minutes
-  //       + ':' + ((seconds < 10) ? '0' : '') + seconds
-  //       + '.' + ((delta < 100 ? '0' : '')) + mSeconds;
-  //     setTime(str);
-  //     console.log(str)
-  //   }
-  // }
+  }, [timing, ready, spaceHeld]);
 
   function msToStr(milliseconds) {
     let mSeconds = Math.floor((milliseconds % 1000) );
@@ -51,57 +57,57 @@ export default () => {
     return str;
   }
 
-  // var interval = 10; // ms
-  // var expected = Date.now() + interval;
-  // // setTimeout(step, interval);
-  // function step() {
-  //   var dt = Date.now() - expected; // the drift (positive for overshooting)
-  //   if (dt > interval) {
-  //       // something really bad happened. Maybe the browser (tab) was inactive?
-  //       // possibly special handling to avoid futile "catch up" run
-  //   }
-    
-
-  //   expected += interval;
-  //   setTimeout(step, Math.max(0, interval - dt)); // take into account drift
-  // }
-
   function clear() {
     setTiming(false);
-    setTime(0);
+    timeRef.current = 0;
+    setTime(timeRef.current);
+    setReady(false);
   }
 
   function start() {
     setTiming(true);
+    setStartTime(Date.now());
+    setReady(false);
   }
 
-  function pause() {
+  function end() {
     setTiming(false);
+    setReady(false);
   }
 
+  function spacePressTimer() {
+    timerRef.current = setTimeout(() => {
+      setReady(true);
+    }, 1000)
+  }
 
-  // var display = new SegmentDisplay("display");
-  // display.pattern         = "##:##.##";
-  // display.displayAngle    = 0;
-  // display.digitHeight     = 30.5;
-  // display.digitWidth      = 17;
-  // display.digitDistance   = 3.9;
-  // display.segmentWidth    = 3.2;
-  // display.segmentDistance = 0.2;
-  // display.segmentCount    = 7;
-  // display.cornerType      = 1;
-  // display.colorOn         = "#ffffff";
-  // display.colorOff        = "#3b3b3b";
-  // display.draw();
+  function downHandler(event) {
+    if (event.key === " " && !spaceHeld) {
+      setSpaceHeld(true);
+      if (timing) end();
+      else {
+        spacePressTimer();
+      }
+    }
+  }
+
+  function upHandler(event) {
+    if (event.key === " ") {
+      setSpaceHeld(false);
+      clearTimeout(timerRef.current);
+      if (ready && !timing) {
+        start();
+      }
+    }
+  }
   
   return (
     <>
-      <canvas id="display" class="p-2 m-2" width="260" height="140" style={{ backgroundColor: 'rgb(36, 30, 30)' }}></canvas>
-      {/* <input id='time' class="m-2" type='text' defaultValue={time} onKeyUp={handleChange} pattern="[0-9]{2}:[0-9]{2}\.[0-9]{2}"></input> */}
+      <canvas id="display" class="p-2 m-2" width="260" height="140" style={{ backgroundColor: 'rgb(36, 30, 30)' }} value={time}></canvas>
       <div>
         <button class="m-1" onClick={clear}>Clear</button>
         <button class="m-1" onClick={start}>Start</button>
-        <button class="m-1" onClick={pause}>Pause</button>
+        <button class="m-1" onClick={end}>Stop</button>
       </div>
     </>
   );
