@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 // import SegmentDisplay from "./segment-display.js"
 
-export default () => {
+const Timer = () => {
   const [time, setTime] = useState(0);
   const [timing, setTiming] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -21,6 +21,26 @@ export default () => {
 
     document.addEventListener("keydown", downHandler, false);
     document.addEventListener("keyup", upHandler, false);
+
+    function downHandler(event) {
+      if (event.key === " " && !spaceHeld) {
+        setSpaceHeld(true);
+        if (timing) end();
+        else {
+          spacePressTimer();
+        }
+      }
+    }
+  
+    function upHandler(event) {
+      if (event.key === " ") {
+        setSpaceHeld(false);
+        clearTimeout(timerRef.current);
+        if (ready && !timing) {
+          start();
+        }
+      }
+    }
 
     if (timing) {
       timerInterval = setInterval(() => {
@@ -45,7 +65,7 @@ export default () => {
       document.removeEventListener("keydown", downHandler, false);
       document.removeEventListener("keyup", upHandler, false);
     }
-  }, [timing, ready, spaceHeld]);
+  }, [startTime, timing, ready, spaceHeld]);
 
   function msToStr(milliseconds) {
     let mSeconds = Math.floor((milliseconds % 1000) );
@@ -78,37 +98,19 @@ export default () => {
   function spacePressTimer() {
     timerRef.current = setTimeout(() => {
       setReady(true);
-    }, 1000)
-  }
-
-  function downHandler(event) {
-    if (event.key === " " && !spaceHeld) {
-      setSpaceHeld(true);
-      if (timing) end();
-      else {
-        spacePressTimer();
-      }
-    }
-  }
-
-  function upHandler(event) {
-    if (event.key === " ") {
-      setSpaceHeld(false);
-      clearTimeout(timerRef.current);
-      if (ready && !timing) {
-        start();
-      }
-    }
+    }, 500)
   }
   
   return (
     <>
-      <canvas id="display" class="p-2 m-2" width="260" height="140" style={{ backgroundColor: 'rgb(36, 30, 30)' }} value={time}></canvas>
+      <canvas id="display" class="px-5 m-2" width="260" height="140" style={{ backgroundColor: 'rgb(36, 30, 30)' }} value={time}></canvas>
       <div>
-        <button class="m-1" onClick={clear}>Clear</button>
-        <button class="m-1" onClick={start}>Start</button>
-        <button class="m-1" onClick={end}>Stop</button>
+        <button class="btn m-1" onClick={clear}>Clear</button>
+        <button class="btn m-1" onClick={start}>Start</button>
+        <button class="btn m-1" onClick={end}>Stop</button>
       </div>
     </>
   );
 }
+
+export default Timer;
