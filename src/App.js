@@ -26,8 +26,9 @@ function App() {
     //   </header> */}
     //   <Login />
     // </div>
-
-    <TimerHome />
+    <div class="bg-dark">
+      <TimerHome />
+    </div>
 
     // <canvas id="display"></canvas>
   );

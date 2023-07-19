@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 // import SegmentDisplay from "./segment-display.js"
 
-const Timer = () => {
+const Timer = ({ addTime, removeTime }) => {
   const [time, setTime] = useState(0);
   const [timing, setTiming] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -22,6 +22,13 @@ const Timer = () => {
     document.addEventListener("keydown", downHandler, false);
     document.addEventListener("keyup", upHandler, false);
 
+    function end() {
+      setTiming(false);
+      setReady(false);
+  
+      addTime(timeRef.current);
+    }
+    
     function downHandler(event) {
       if (event.key === " " && !spaceHeld) {
         setSpaceHeld(true);
@@ -29,6 +36,8 @@ const Timer = () => {
         else {
           spacePressTimer();
         }
+      } else if (event.key === "Escape") {
+        clear();
       }
     }
   
@@ -65,7 +74,7 @@ const Timer = () => {
       document.removeEventListener("keydown", downHandler, false);
       document.removeEventListener("keyup", upHandler, false);
     }
-  }, [startTime, timing, ready, spaceHeld]);
+  }, [startTime, timing, ready, spaceHeld, addTime]);
 
   function msToStr(milliseconds) {
     let mSeconds = Math.floor((milliseconds % 1000) );
@@ -90,26 +99,15 @@ const Timer = () => {
     setReady(false);
   }
 
-  function end() {
-    setTiming(false);
-    setReady(false);
-  }
 
   function spacePressTimer() {
     timerRef.current = setTimeout(() => {
       setReady(true);
-    }, 500)
+    }, 100)
   }
   
   return (
-    <>
       <canvas id="display" class="px-5 m-2" width="260" height="140" style={{ backgroundColor: 'rgb(36, 30, 30)' }} value={time}></canvas>
-      <div>
-        <button class="btn m-1" onClick={clear}>Clear</button>
-        <button class="btn m-1" onClick={start}>Start</button>
-        <button class="btn m-1" onClick={end}>Stop</button>
-      </div>
-    </>
   );
 }
 
