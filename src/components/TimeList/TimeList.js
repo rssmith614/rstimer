@@ -11,7 +11,7 @@ const TimeList = ({ times }) => {
       str += ((seconds < 10) ? '0' : '');
     }
     str += seconds + '.'
-      + ((mSeconds < 100 ? '0' : '')) + mSeconds;
+      + ((mSeconds < 100 ? '0' : '')) + ((mSeconds < 10 ? '0' : '')) + mSeconds;
     return str.slice(0, str.length-1);
   }
 

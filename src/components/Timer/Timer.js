@@ -80,10 +80,20 @@ const Timer = ({ addTime, removeTime }) => {
     let mSeconds = Math.floor((milliseconds % 1000) );
     let seconds = Math.floor((milliseconds / 1000) % 60);
     let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
-    let str = ((minutes < 10) ? '0' : '') + minutes
-      + ':' + ((seconds < 10) ? '0' : '') + seconds
-      + '.' + ((mSeconds < 100 ? '0' : '')) + mSeconds;
-    return str;
+    let str = ''
+    if (minutes > 0) {
+      if (minutes < 9)
+        str += ' ';
+      str += minutes + ':';
+      str += ((seconds < 10) ? '0' : '');
+    } else {
+      str += '   ';
+      if (seconds < 9)
+        str += ' ';
+    }
+    str += seconds + '.'
+      + ((mSeconds < 100 ? '0' : '')) + ((mSeconds < 10 ? '0' : '')) + mSeconds;
+    return str.slice(0, str.length-1);
   }
 
   function clear() {
