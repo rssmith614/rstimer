@@ -51,7 +51,7 @@ const TimerHome = () => {
       <div class="position-absolute h-100 p-3 overflow-scroll">
         <TimeList times={times}/>
       </div>
-      <div class="position-absolute top-50 start-50 translate-middle">
+      <div class="position-absolute top-50 start-50 translate-middle" style={{ background: '--bs-dark' }}>
         <Timer addTime={addTime} removeTime={removeTime}/>
       </div>
     </div>

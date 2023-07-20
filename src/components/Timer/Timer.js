@@ -107,7 +107,7 @@ const Timer = ({ addTime, removeTime }) => {
   }
   
   return (
-      <canvas id="display" class="px-5 m-2" width="260" height="140" style={{ backgroundColor: 'rgb(36, 30, 30)' }} value={time}></canvas>
+      <canvas id="display" class="px-5 m-2" width="260" height="140" value={time}></canvas>
   );
 }
 
