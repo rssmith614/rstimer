@@ -1,7 +1,7 @@
 const TimeList = ({ times }) => {
 
   function msToStr(milliseconds) {
-    if (milliseconds === null) return "N/A";
+    if (milliseconds === '') return "N/A";
     let mSeconds = Math.floor((milliseconds % 1000) );
     let seconds = Math.floor((milliseconds / 1000) % 60);
     let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
