@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {  signInWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect, getRedirectResult  } from 'firebase/auth';
-import { auth, provider } from '../services/auth';
+import {  signInWithEmailAndPassword  } from 'firebase/auth';
+import { auth } from '../services/auth';
 import { NavLink, useNavigate } from 'react-router-dom'
  
 const Login = () => {
@@ -40,7 +40,7 @@ const Login = () => {
       navigate("/")
     })
     .catch((error) => {
-      const errorCode = error.code;
+      // const errorCode = error.code;
       const errorMessage = error.message;
       // console.log(errorCode, errorMessage)
       alert(errorMessage);

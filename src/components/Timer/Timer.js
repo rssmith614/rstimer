@@ -88,7 +88,7 @@ const Timer = ({ addTime, removeTime }) => {
       str += ((seconds < 10) ? '0' : '');
     } else {
       str += '   ';
-      if (seconds < 9)
+      if (seconds < 10)
         str += ' ';
     }
     str += seconds + '.'
