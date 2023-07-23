@@ -29,7 +29,7 @@ const TimeList = ({ times }) => {
   }
 
   return (
-    <table class="table table-dark table-striped">
+    <table class="table table-striped">
       <thead>
         <tr>
           <th></th>

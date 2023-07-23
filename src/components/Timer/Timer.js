@@ -65,7 +65,7 @@ const Timer = ({ addTime, removeTime }) => {
     } else if (!ready && spaceHeld) {
       window.display.colorOn = '#ff0000';
     } else {
-      window.display.colorOn = '#ffffff';
+      window.display.colorOn = '#fff';
     }
 
     return () => {
