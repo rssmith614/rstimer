@@ -86,8 +86,7 @@ const TimerHome = () => {
             scrambleMoves.push('')
             break
         }
-      }
-      console.log(scrambleMoves)   
+      } 
       return scrambleMoves;
     }
   }, [times])
@@ -155,9 +154,9 @@ const TimerHome = () => {
       time: time,
       scramble: scramble,
       ao5: ao5(lastFive),
-      ao12: ao12(lastTwelve)
+      ao12: ao12(lastTwelve),
+      date: new Date(Date.now()).toString()
     };
-    console.log(newTime);
     setTimes([...times, newTime]);
 
     const newPostKey = push(child(ref(db), 'times')).key;
@@ -175,9 +174,9 @@ const TimerHome = () => {
   }
 
   return (
-    <div class="d-flex justify-content-between vh-100">
+    <div className="d-flex justify-content-between vh-100">
       <div className="d-flex align-items-start flex-column">
-        <div class="p-3 overflow-scroll">
+        <div className="p-3 overflow-scroll">
           <TimeList times={times}/>
         </div>
         <div className="mt-auto p-3 h1">
@@ -187,10 +186,10 @@ const TimerHome = () => {
       <div>
         <Scramble scramble={scramble}/>
       </div>
-      <div class="position-absolute top-50 start-50 translate-middle" style={{ background: '#00000000' }}>
+      <div className="position-absolute top-50 start-50 translate-middle" style={{ background: '#00000000' }}>
         <Timer addTime={addTime} removeTime={removeTime}/>
       </div>
-      <div class="position-absolute bottom-0 end-0">
+      <div className="position-absolute bottom-0 end-0">
         <button onClick={handleLogout} className="btn btn-secondary m-2">Log Out</button>
       </div>
     </div>

@@ -65,7 +65,8 @@ const Timer = ({ addTime, removeTime }) => {
     } else if (!ready && spaceHeld) {
       window.display.colorOn = '#ff0000';
     } else {
-      window.display.colorOn = '#fff';
+      let timerColor = getComputedStyle(document.documentElement).getPropertyValue('--bs-emphasis-color');
+      window.display.colorOn = timerColor;
     }
 
     return () => {
@@ -117,7 +118,7 @@ const Timer = ({ addTime, removeTime }) => {
   }
   
   return (
-      <canvas id="display" class="px-5 m-2" width="260" height="140" value={time}></canvas>
+      <canvas id="display" className="px-5 m-2" width="260" height="140" value={time}></canvas>
   );
 }
 
