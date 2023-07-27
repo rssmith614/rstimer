@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 // import SegmentDisplay from "./segment-display.js"
 
-const Timer = ({ addTime, removeTime }) => {
+const Timer = ({ addTime }) => {
   const [time, setTime] = useState(0);
   const [timing, setTiming] = useState(false);
   const [startTime, setStartTime] = useState(null);

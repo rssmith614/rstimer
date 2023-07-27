@@ -1,6 +1,6 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { onValue, ref, child, push, update, query, orderByChild, equalTo } from "firebase/database";
+import { onValue, ref, child, push, update, query, orderByChild, orderByValue, equalTo, remove } from "firebase/database";
 
 import { db } from "../services/db";
 import { auth } from "../services/auth";
@@ -14,6 +14,8 @@ import { onAuthStateChanged, signOut } from "@firebase/auth";
 const TimerHome = () => {
   const [times, setTimes] = useState([]);
   const [scramble, setScramble] = useState("");
+
+  const timeReferences = useRef({});
 
   const nav = useNavigate();
   
@@ -98,8 +100,13 @@ const TimerHome = () => {
     
         const onDataChange = (snapshot) => {
           const data = snapshot.val();
-          if (snapshot.exists())
+          if (snapshot.exists()) {
+            Object.entries(data).map((entry) => {
+              timeReferences.current[entry[1].id] = entry[0];
+              return timeReferences.current[entry[1].id];
+            })
             setTimes(Object.values(data));
+          }
         };
 
         return onValue(timesForUser, onDataChange);
@@ -168,16 +175,37 @@ const TimerHome = () => {
   }
 
   function removeTime(idx) {
-    const newTimes = [...times];
-    newTimes.splice(idx, 1);
+    if (window.confirm(`Are you sure?\nDelete time #${idx}`) === false)
+      return;
+    // console.log('removing', idx);
+    const newTimes = times.filter(time => time.id !== idx);
+    newTimes.sort((a, b) => (a.id - b.id));
+    // console.log(newTimes);
+
+    const updates = {};
+    updates[`/times/${timeReferences.current[idx]}`] = null;
+
+    for (let i=idx-1; i<newTimes.length; i++) {
+      const lastFive = newTimes.slice(i-4, i+1);
+      const lastTwelve = newTimes.slice(i-11, i+1);
+      
+      newTimes[i].id -= 1;
+      newTimes[i].ao5 = ao5(lastFive);
+      newTimes[i].ao12 = ao12(lastTwelve);
+
+      updates[`/times/${timeReferences.current[newTimes[i].id+1]}`] = newTimes[i];
+    }
+
     setTimes(newTimes);
+
+    return update(ref(db), updates)
   }
 
   return (
     <div className="d-flex justify-content-between vh-100">
       <div className="d-flex align-items-start flex-column">
         <div className="p-3 overflow-scroll">
-          <TimeList times={times}/>
+          <TimeList times={times} removeTime={removeTime}/>
         </div>
         <div className="mt-auto p-3 h1">
           RSTimer

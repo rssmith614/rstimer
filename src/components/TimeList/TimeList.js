@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const TimeList = ({ times }) => {
+const TimeList = ({ times, removeTime }) => {
   const [overlay, setOverlay] = useState(null);
 
   const selectTime = (timeIdx) => {
@@ -23,7 +23,7 @@ const TimeList = ({ times }) => {
           <p>
             Scramble: {time.scramble}
           </p>
-          <button className="btn btn-danger">
+          <button className="btn btn-danger" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" onClick={() => removeTime(time.id)}>
             Delete Time
           </button>
         </div>
@@ -205,7 +205,7 @@ const TimeList = ({ times }) => {
         </tbody>
       </table>
 
-      <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasRight">
+      <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasRight" data-toggle="modal">
         {overlay}
       </div>
     </>
