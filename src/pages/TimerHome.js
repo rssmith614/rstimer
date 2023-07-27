@@ -1,6 +1,6 @@
 import { React, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { onValue, ref, child, push, update, query, orderByChild, orderByValue, equalTo, remove } from "firebase/database";
+import { onValue, ref, child, push, update, query, orderByChild, equalTo } from "firebase/database";
 
 import { db } from "../services/db";
 import { auth } from "../services/auth";
