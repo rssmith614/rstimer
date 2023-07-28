@@ -1,4 +1,35 @@
-const TimeList = ({ times, removeTime, setOverlay }) => {
+const Stats = ({ times, removeTime, setOverlay }) => {
+
+  function msToStr(milliseconds) {
+    if (milliseconds === '') return "N/A";
+    let mSeconds = Math.floor((milliseconds % 1000) );
+    let seconds = Math.floor((milliseconds / 1000) % 60);
+    let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+    let str = ''
+    if (minutes > 0) {
+      str += minutes + ':';
+      str += ((seconds < 10) ? '0' : '');
+    }
+    str += seconds + '.'
+      + ((mSeconds < 100 ? '0' : '')) + ((mSeconds < 10 ? '0' : '')) + mSeconds;
+    return str.slice(0, str.length-1);
+  }
+
+  const average = (times) => {
+    return times.reduce((acc, curr) => acc + curr.time, 0) / times.length;
+  };
+
+  const best = (times) => {
+    return times.reduce((acc, curr) => acc = (curr.time < acc.time ? curr : acc), {time: Infinity});
+  };
+
+  const bestAo5 = (times) => {
+    return times.reduce((acc, curr) => acc = (((curr.ao5 < acc.ao5) && curr.ao5 !== '') ? curr : acc), {ao5: Infinity});
+  };
+
+  const bestAo12 = (times) => {
+    return times.reduce((acc, curr) => acc = ((curr.ao12 < acc.ao12) && curr.ao12 !== '' ? curr : acc), {ao12: Infinity});
+  };
 
   const selectTime = (timeIdx) => {
     let time = times.sort((a, b) => (a.id - b.id))[timeIdx-1];
@@ -92,7 +123,7 @@ const TimeList = ({ times, removeTime, setOverlay }) => {
 
     const median = lastTwelve.filter(o => o !== smallest && o !== largest);
 
-    const ao12 = median.reduce((acc, curr) => acc + curr.time, 0) / 10;
+    const ao12 = median.reduce((acc, curr) => acc + curr.time, 0) / 9;
 
     const timeList = [];
 
@@ -137,74 +168,29 @@ const TimeList = ({ times, removeTime, setOverlay }) => {
     setOverlay(summary);
   }
 
-  function msToStr(milliseconds) {
-    if (milliseconds === '') return "N/A";
-    let mSeconds = Math.floor((milliseconds % 1000) );
-    let seconds = Math.floor((milliseconds / 1000) % 60);
-    let minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
-    let str = ''
-    if (minutes > 0) {
-      str += minutes + ':';
-      str += ((seconds < 10) ? '0' : '');
-    }
-    str += seconds + '.'
-      + ((mSeconds < 100 ? '0' : '')) + ((mSeconds < 10 ? '0' : '')) + mSeconds;
-    return str.slice(0, str.length-1);
-  }
-
-  function timeList() {
-    return times.sort((a, b) => (b.id - a.id)).map((time) => {
-      return (
-        <tr key={time.id}>
-          <td>
-            <strong>{ time.id }</strong>
-          </td>
-          <td>
-            <div
-            data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-            style={{ cursor: 'pointer' }}
-            onClick={() => selectTime(time.id)}>
-              { msToStr(time.time) }
-            </div>    
-          </td>
-          <td>
-            <div
-            data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-            style={{ cursor: 'pointer' }}
-            onClick={() => getAo5(time.id)}>
-              { msToStr(time.ao5) }
-            </div>
-          </td>
-          <td>
-            <div
-            data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
-            style={{ cursor: 'pointer' }}
-            onClick={() => getAo12(time.id)}>
-              { msToStr(time.ao12) }
-            </div>
-          </td>
-        </tr>
-      );
-    });
-  }
-
   return (
-    <>
-      <table className="table table-striped p-3">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Time</th>
-            <th>ao5</th>
-            <th>ao12</th>
-          </tr>
-        </thead>
-        <tbody className="table-group-divider">
-          { timeList() }
-        </tbody>
-      </table>
-    </>
+    <div className="px-3 py-3 mt-3 card">
+      <h3>Average: { msToStr(average(times)) }</h3>
+        <div className="py-1"
+          data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+          style={{ cursor: 'pointer' }}
+          onClick={() => selectTime(best(times).id)}>
+            PB Single: { msToStr(best(times).time) }
+        </div>
+        <div className="py-1"
+          data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+          style={{ cursor: 'pointer' }}
+          onClick={() => getAo5(bestAo5(times).id)}>
+            PB ao5: { msToStr(bestAo5(times).ao5) }
+        </div>
+        <div className="py-1"
+          data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight"
+          style={{ cursor: 'pointer' }}
+          onClick={() => getAo12(bestAo12(times).id)}>
+            PB ao12: { msToStr(bestAo12(times).ao12) }
+        </div>
+    </div>
   );
-}
+};
 
-export default TimeList;
+export default Stats;

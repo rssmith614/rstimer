@@ -8,12 +8,14 @@ import { auth } from "../services/auth";
 import Timer from "../components/Timer/Timer"
 import TimeList from "../components/TimeList/TimeList"
 import Scramble from "../components/Scramble/Scramble";
+import Stats from "../components/Stats/Stats";
 
 import { onAuthStateChanged, signOut } from "@firebase/auth";
 
 const TimerHome = () => {
   const [times, setTimes] = useState([]);
   const [scramble, setScramble] = useState(makeScramble().join(' '));
+  const [overlay, setOverlay] = useState("");
 
   const timeReferences = useRef({});
 
@@ -56,27 +58,37 @@ const TimerHome = () => {
   // thank you bjcarlson42 https://github.com/bjcarlson42
   function makeScramble() {
     var options = ["F", "F2", "F'", "R", "R2", "R'", "U", "U2", "U'", "B", "B2", "B'", "L", "L2", "L'", "D", "D2", "D'"]
-    var numOptions = [0, 1, 2, 3, 4, 5] // 0 = F, 1 = R, 2 = U, 3 = B, 4 = L, 5 = D
+    var numOptions = new Set([0, 1, 2, 3, 4, 5]) // 0 = F, 1 = R, 2 = U, 3 = B, 4 = L, 5 = D
     var scramble = []
     var scrambleMoves = []
-    var bad = true
     
-    while (bad) {
-      scramble = []
-      for (let i = 0; i < 20; i++) {
-        scramble.push(numOptions[getRandomInt(6)])
-      }
-      // check if moves directly next to each other involve the same letter
-      for (let i = 0; i < 20 - 1; i++) {
-        if (scramble[i] === scramble[i + 1]) {
-          bad = true
-          break
-        } else {
-          bad = false
-        }
+    // this is different from bjcarlson42's algorithm
+    scramble = []
+    for (let i = 0; i < 20; i++) {
+      // pick a random valid move option
+      let candidate = Array.from(numOptions.values())[getRandomInt(numOptions.size)];
+      scramble.push(candidate);
+      // don't select the move next time around
+      numOptions.delete(candidate);
+
+      // this avoids cases like "R L R" by only letting L or R be selected again
+      // once F, U, B, or D is selected
+      switch (candidate) {
+        case 0:
+        case 3:
+          numOptions.add(1); numOptions.add(2); numOptions.add(4); numOptions.add(5);
+          break;
+        case 1:
+        case 4:
+          numOptions.add(0); numOptions.add(2); numOptions.add(3); numOptions.add(5);
+          break;
+        case 2:
+        case 5:
+          numOptions.add(0); numOptions.add(1); numOptions.add(3); numOptions.add(4);
+          break;
       }
     }
-    // console.log(scramble)
+
     // switch numbers to letters
     var move
     for (var i = 0; i < 20; i++) {
@@ -200,17 +212,21 @@ const TimerHome = () => {
   }
 
   return (
+    <>
     <div className="d-flex justify-content-between vh-100">
-      <div className="d-flex align-items-start flex-column">
+      <div className="d-flex align-items-center flex-column">
         <div className="p-3 overflow-scroll">
-          <TimeList times={times} removeTime={removeTime}/>
+          <TimeList times={times} removeTime={removeTime} setOverlay={setOverlay}/>
         </div>
-        <div className="mt-auto p-3 h1">
+        <div className="mt-auto p-3">
+          <Stats times={times} removeTime={removeTime} setOverlay={setOverlay}/>
+        </div>
+        <div className="p-3 h1">
           RSTimer
         </div>
         </div>
       <div>
-        <Scramble scramble={scramble}/>
+        <Scramble scramble={scramble} updateScramble={ () => setScramble(makeScramble().join(' ')) } />
       </div>
       <div className="position-absolute top-50 start-50 translate-middle" style={{ background: '#00000000' }}>
         <Timer addTime={addTime} removeTime={removeTime}/>
@@ -219,6 +235,11 @@ const TimerHome = () => {
         <button onClick={handleLogout} className="btn btn-secondary m-2">Log Out</button>
       </div>
     </div>
+
+    <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasRight" data-toggle="modal">
+      {overlay}
+    </div>
+    </>
   );
 }
 
