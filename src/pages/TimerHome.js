@@ -6,32 +6,27 @@ import { db } from "../services/db";
 import { auth } from "../services/auth";
 
 import Timer from "../components/Timer/Timer"
-import TimeList from "../components/TimeList/TimeList"
-import Scramble from "../components/Scramble/Scramble";
-import Stats from "../components/Stats/Stats";
+import TimeList from "../components/Utils/TimeList"
+import Scramble from "../components/Utils/Scramble";
+import Stats from "../components/Utils/Stats";
+import ScrambleVis from "../components/Utils/ScrambleVis";
 
-import { onAuthStateChanged, signOut } from "@firebase/auth";
+import { onAuthStateChanged } from "@firebase/auth";
+import Settings from "../components/Utils/Settings";
 
 const TimerHome = () => {
   const [times, setTimes] = useState([]);
   const [scramble, setScramble] = useState(makeScramble().join(' '));
+  const [drawScramble, setDrawScramble] = useState(localStorage.getItem('drawScramble'));
   const [overlay, setOverlay] = useState("");
+  const [theme, setTheme] = useState(document.documentElement.getAttribute('data-bs-theme'));
 
   const timeReferences = useRef({});
 
   const nav = useNavigate();
-  
-  const handleLogout = () => {               
-    signOut(auth).then(() => {
-      // Sign-out successful.
-      nav("/login");
-      console.log("Signed out successfully")
-    }).catch((error) => {
-      // An error happened.
-    });
-  }
 
   useEffect(() => {
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
         const timesForUser = query(ref(db, "times"), orderByChild('user'), equalTo(auth.currentUser.uid))
@@ -85,6 +80,8 @@ const TimerHome = () => {
         case 2:
         case 5:
           numOptions.add(0); numOptions.add(1); numOptions.add(3); numOptions.add(4);
+          break;
+        default:
           break;
       }
     }
@@ -221,23 +218,31 @@ const TimerHome = () => {
         <div className="mt-auto p-3">
           <Stats times={times} removeTime={removeTime} setOverlay={setOverlay}/>
         </div>
-        <div className="p-3 h1">
+        <div className="p-3 h1" style={{ cursor: 'pointer' }}
+          data-bs-toggle="offcanvas" data-bs-target="#settingsOverlay">
           RSTimer
         </div>
         </div>
-      <div>
-        <Scramble scramble={scramble} updateScramble={ () => setScramble(makeScramble().join(' ')) } />
+      <div className="d-flex justify-content-between flex-column">
+        <div className="d-flex align-self-start">
+          <Scramble scramble={scramble} updateScramble={ () => setScramble(makeScramble().join(' ')) } />
+        </div>
+        <div className="d-flex align-self-end" style={{ background: '#00000000' }}>
+          <Timer addTime={addTime} removeTime={removeTime} theme={theme} />
+        </div>
+        <div className="d-flex align-self-end">
+          {drawScramble === 'true' ? <ScrambleVis scramble={scramble} /> : <></>}
+        </div>
       </div>
-      <div className="position-absolute top-50 start-50 translate-middle" style={{ background: '#00000000' }}>
-        <Timer addTime={addTime} removeTime={removeTime}/>
-      </div>
-      <div className="position-absolute bottom-0 end-0">
-        <button onClick={handleLogout} className="btn btn-secondary m-2">Log Out</button>
-      </div>
+      
     </div>
 
     <div className="offcanvas offcanvas-end" tabIndex={-1} id="offcanvasRight" data-toggle="modal">
       {overlay}
+    </div>
+
+    <div id="settingsOverlay" className="offcanvas offcanvas-end" tabIndex={-1}>
+      <Settings theme={theme} setTheme={setTheme} drawScramble={drawScramble} setDrawScramble={setDrawScramble} />
     </div>
     </>
   );

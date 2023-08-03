@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-// import SegmentDisplay from "./segment-display.js"
 
-const Timer = ({ addTime }) => {
+const Timer = ({ addTime, theme }) => {
   const [time, setTime] = useState(0);
   const [timing, setTiming] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -75,7 +74,7 @@ const Timer = ({ addTime }) => {
       document.removeEventListener("keydown", downHandler, false);
       document.removeEventListener("keyup", upHandler, false);
     }
-  }, [startTime, timing, ready, spaceHeld, addTime]);
+  }, [startTime, timing, ready, spaceHeld, addTime, theme]);
 
   function msToStr(milliseconds) {
     let mSeconds = Math.floor((milliseconds % 1000) );
@@ -118,7 +117,7 @@ const Timer = ({ addTime }) => {
   }
   
   return (
-      <canvas id="display" className="px-5 m-2" width="260" height="140" value={time}></canvas>
+      <canvas id="display" className="px-5 m-2" width="340" value={time}></canvas>
   );
 }
 

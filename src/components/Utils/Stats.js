@@ -77,6 +77,7 @@ const Stats = ({ times, removeTime, setOverlay }) => {
       if (time === smallest || time === largest) {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>
@@ -86,6 +87,7 @@ const Stats = ({ times, removeTime, setOverlay }) => {
       } else {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>
@@ -123,7 +125,7 @@ const Stats = ({ times, removeTime, setOverlay }) => {
 
     const median = lastTwelve.filter(o => o !== smallest && o !== largest);
 
-    const ao12 = median.reduce((acc, curr) => acc + curr.time, 0) / 9;
+    const ao12 = median.reduce((acc, curr) => acc + curr.time, 0) / 10;
 
     const timeList = [];
 
@@ -131,6 +133,7 @@ const Stats = ({ times, removeTime, setOverlay }) => {
       if (time === smallest || time === largest) {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>
@@ -140,6 +143,7 @@ const Stats = ({ times, removeTime, setOverlay }) => {
       } else {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>

@@ -46,6 +46,7 @@ const TimeList = ({ times, removeTime, setOverlay }) => {
       if (time === smallest || time === largest) {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>
@@ -55,6 +56,7 @@ const TimeList = ({ times, removeTime, setOverlay }) => {
       } else {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>
@@ -100,6 +102,7 @@ const TimeList = ({ times, removeTime, setOverlay }) => {
       if (time === smallest || time === largest) {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>
@@ -109,6 +112,7 @@ const TimeList = ({ times, removeTime, setOverlay }) => {
       } else {
         timeList.push(
           <p
+            key={ time.id }
             data-bs-target="#offcanvasRight"
             style={{ cursor: 'pointer' }}
             onClick={() => selectTime(time.id)}>
